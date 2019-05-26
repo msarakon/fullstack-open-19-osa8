@@ -4,6 +4,7 @@ import { gql } from 'apollo-boost'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import EditAuthor from './components/EditAuthor'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -44,6 +45,18 @@ const App = () => {
       }
     }
   `
+  const EDIT_AUTHOR = gql`
+    mutation editAuthor($name: String!, $setBornTo: Int!) {
+      editAuthor(
+        name: $name,
+        setBornTo: $setBornTo,
+      ) {
+        name
+        id
+        born
+      }
+    }
+  `
 
   return (
     <div>
@@ -51,6 +64,7 @@ const App = () => {
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         <button onClick={() => setPage('add')}>add book</button>
+        <button onClick={() => setPage('edit-author')}>edit author</button>
       </div>
 
       <Query query={ALL_AUTHORS}>
@@ -61,8 +75,12 @@ const App = () => {
         {(result) => <Books show={page === 'books'} result={result} />}
       </Query>
 
-      <Mutation mutation={CREATE_BOOK} refetchQueries={[{ query: ALL_BOOKS }]}>
+      <Mutation mutation={CREATE_BOOK} refetchQueries={[{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]}>
         {(addBook) => <NewBook addBook={addBook} show={page === 'add'} />}
+      </Mutation>
+
+      <Mutation mutation={EDIT_AUTHOR} refetchQueries={[{ query: ALL_AUTHORS }]}>
+        {(editAuthor) => <EditAuthor editAuthor={editAuthor} show={page === 'edit-author'} />}
       </Mutation>
 
     </div>

@@ -154,7 +154,9 @@ const resolvers = {
       let author = authors.find(author => author.name === args.name)
       if (author) {
         author = { ...author, born: args.setBornTo }
-        authors.map(a => a.name === author.name ? author : a)
+        authors = authors.map(a => {
+          return a.name === author.name ? author : a
+        })
         return author
       }
       return null
