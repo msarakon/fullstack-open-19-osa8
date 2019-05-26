@@ -68,7 +68,20 @@ const App = () => {
       </div>
 
       <Query query={ALL_AUTHORS}>
-        {(result) => <Authors show={page === 'authors'} result={result} />}
+        {(result) => {
+          return (
+            <div>
+              <Authors show={page === 'authors'} result={result} />
+              <Mutation mutation={EDIT_AUTHOR} refetchQueries={[{ query: ALL_AUTHORS }]}>
+                {(editAuthor) =>
+                  <EditAuthor
+                    editAuthor={editAuthor}
+                    result={result}
+                    show={page === 'edit-author'} />}
+              </Mutation>
+            </div>
+          )
+        }}
       </Query>
 
       <Query query={ALL_BOOKS}>
@@ -77,10 +90,6 @@ const App = () => {
 
       <Mutation mutation={CREATE_BOOK} refetchQueries={[{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]}>
         {(addBook) => <NewBook addBook={addBook} show={page === 'add'} />}
-      </Mutation>
-
-      <Mutation mutation={EDIT_AUTHOR} refetchQueries={[{ query: ALL_AUTHORS }]}>
-        {(editAuthor) => <EditAuthor editAuthor={editAuthor} show={page === 'edit-author'} />}
       </Mutation>
 
     </div>
