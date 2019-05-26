@@ -33,6 +33,7 @@ const App = () => {
       id
       author { name }
       published
+      genres
     }
   }
   `
