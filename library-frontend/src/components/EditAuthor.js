@@ -22,6 +22,7 @@ const EditAuthor = ({ show, editAuthor, result }) => {
 
   const submit = async (e) => {
     e.preventDefault()
+    if (author == null) return
     editAuthor({
       variables: {
         name: author.label,

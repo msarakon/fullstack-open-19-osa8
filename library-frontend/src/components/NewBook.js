@@ -16,7 +16,7 @@ const NewBook = ({ show, addBook }) => {
     
     addBook({
       variables: {
-        title: title.trim() !== '' ? title : null,
+        title,
         published: Number(published),
         author,
         genres
