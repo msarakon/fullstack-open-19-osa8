@@ -42,7 +42,9 @@ const App = () => {
       ) {
         title
         id
-        author
+        author {
+          name
+        }
         published
       }
     }
