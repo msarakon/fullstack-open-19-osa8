@@ -4,7 +4,8 @@
   "description": "Part 8 of Full Stack Open exercises",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "watch": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -14,5 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server": "^2.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }
