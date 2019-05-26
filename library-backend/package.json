@@ -1,0 +1,18 @@
+{
+  "name": "library-backend",
+  "version": "1.0.0",
+  "description": "Part 8 of Full Stack Open exercises",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msarakon/fullstack-open-19-osa8.git"
+  },
+  "author": "Minna Sarakontu",
+  "license": "MIT",
+  "dependencies": {
+    "apollo-server": "^2.5.0"
+  }
+}
