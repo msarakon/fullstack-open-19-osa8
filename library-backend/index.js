@@ -143,7 +143,7 @@ const resolvers = {
     addBook: (root, args) => {
       let author = authors.find(author => author.name === args.author)
       if (!author) {
-        author = { name: args.author }
+        author = { name: args.author, id: uuid() }
         authors = authors.concat(author)
       }
       const book = { ...args, id: uuid() }
