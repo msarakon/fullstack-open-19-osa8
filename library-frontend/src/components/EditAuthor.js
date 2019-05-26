@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Select from 'react-select'
 
 const EditAuthor = ({ show, editAuthor, result }) => {
-  const [name, setName] = useState('')
+  const [author, setAuthor] = useState(null)
   const [born, setBorn] = useState('')
 
   if (!show) {
@@ -24,12 +24,12 @@ const EditAuthor = ({ show, editAuthor, result }) => {
     e.preventDefault()
     editAuthor({
       variables: {
-        name: name.trim() !== '' ? name : null,
+        name: author.label,
         setBornTo: Number(born)
       }
     })
 
-    setName('')
+    setAuthor(null)
     setBorn('')
   }
 
@@ -38,8 +38,8 @@ const EditAuthor = ({ show, editAuthor, result }) => {
       <form onSubmit={submit}>
         <div>
           <Select
-            value={name}
-            onChange={({ label }) => setName(label)}
+            value={author}
+            onChange={(author) => setAuthor(author)}
             options={authors}/>
         </div>
         <div>
