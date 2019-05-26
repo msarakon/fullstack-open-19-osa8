@@ -14,7 +14,8 @@
   "author": "Minna Sarakontu",
   "license": "MIT",
   "dependencies": {
-    "apollo-server": "^2.5.0"
+    "apollo-server": "^2.5.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
