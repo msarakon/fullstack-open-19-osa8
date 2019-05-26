@@ -1,13 +1,20 @@
-import React, { useState } from 'react'
-import { Query, Mutation } from 'react-apollo'
+import React, { useState, useEffect } from 'react'
+import { useQuery, useMutation, useApolloClient } from 'react-apollo-hooks'
 import { gql } from 'apollo-boost'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import EditAuthor from './components/EditAuthor'
+import Login from './components/Login'
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  const [token, setToken] = useState(null)
+  const client = useApolloClient()
+
+  useEffect(() => {
+    setToken(localStorage.getItem('libraryAppUserToken', token))
+  }, [token])
 
   const ALL_AUTHORS = gql`
   {
@@ -24,9 +31,7 @@ const App = () => {
     allBooks {
       title
       id
-      author {
-        name
-      }
+      author { name }
       published
     }
   }
@@ -42,9 +47,7 @@ const App = () => {
       ) {
         title
         id
-        author {
-          name
-        }
+        author { name }
         published
       }
     }
@@ -62,39 +65,56 @@ const App = () => {
     }
   `
 
+  const LOGIN = gql`
+    mutation login($username: String!, $password: String!) {
+      login(username: $username, password: $password) {
+        value
+      }
+    }
+  `
+
+  const authors = useQuery(ALL_AUTHORS)
+  const books = useQuery(ALL_BOOKS)
+  const addBook = useMutation(CREATE_BOOK, {
+    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
+  })
+  const editAuthor = useMutation(EDIT_AUTHOR, {
+    refetchQueries: [{ query: ALL_AUTHORS }]
+  })
+  const login = useMutation(LOGIN)
+
+  const logout = () => {
+    setToken(null)
+    localStorage.clear()
+    client.resetStore()
+  }
+
   return (
     <div>
       <div>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
-        <button onClick={() => setPage('add')}>add book</button>
-        <button onClick={() => setPage('edit-author')}>edit author</button>
+        {token && <button onClick={() => setPage('add')}>add book</button>}
+        {token && <button onClick={() => setPage('edit-author')}>edit author</button>}
+        <button onClick={() => setPage('login')}>login</button>
+        {token && <button onClick={logout}>log out</button>}
       </div>
 
-      <Query query={ALL_AUTHORS}>
-        {(result) => {
-          return (
-            <div>
-              <Authors show={page === 'authors'} result={result} />
-              <Mutation mutation={EDIT_AUTHOR} refetchQueries={[{ query: ALL_AUTHORS }]}>
-                {(editAuthor) =>
-                  <EditAuthor
-                    editAuthor={editAuthor}
-                    result={result}
-                    show={page === 'edit-author'} />}
-              </Mutation>
-            </div>
-          )
-        }}
-      </Query>
+      <Authors show={page === 'authors'} result={authors} />
 
-      <Query query={ALL_BOOKS}>
-        {(result) => <Books show={page === 'books'} result={result} />}
-      </Query>
+      <EditAuthor
+        editAuthor={editAuthor}
+        result={authors}
+        show={page === 'edit-author'} />
 
-      <Mutation mutation={CREATE_BOOK} refetchQueries={[{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]}>
-        {(addBook) => <NewBook addBook={addBook} show={page === 'add'} />}
-      </Mutation>
+      <Books show={page === 'books'} result={books} />
+
+      <NewBook addBook={addBook} show={page === 'add'} />
+
+      <Login
+        login={login}
+        setToken={(token) => setToken(token)}
+        show={page === 'login'} />
 
     </div>
   )
