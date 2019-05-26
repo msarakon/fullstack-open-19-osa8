@@ -12,9 +12,9 @@ const App = () => {
   const ALL_AUTHORS = gql`
   {
     allAuthors {
-      name,
-      id,
-      born,
+      name
+      id
+      born
       bookCount
     }
   }
@@ -22,9 +22,11 @@ const App = () => {
   const ALL_BOOKS = gql`
   {
     allBooks {
-      title,
-      id,
-      author,
+      title
+      id
+      author {
+        name
+      }
       published
     }
   }

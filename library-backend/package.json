@@ -15,7 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "apollo-server": "^2.5.0",
-    "uuid": "^3.3.2"
+    "mongoose": "^5.5.11",
+    "mongoose-unique-validator": "^2.0.3"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
