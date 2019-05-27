@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Subscription } from 'react-apollo'
 import { useQuery, useMutation, useApolloClient } from 'react-apollo-hooks'
 import { gql } from 'apollo-boost'
 import Authors from './components/Authors'
@@ -41,16 +42,24 @@ const App = () => {
     }
   }
   `
-  const ALL_BOOKS = gql`
-  query allBooks($genre: String) {
-    allBooks(genre: $genre) {
+
+  const BOOK_DETAILS = gql`
+    fragment BookDetails on Book {
       title
       id
       author { name }
       published
       genres
     }
+  `
+
+  const ALL_BOOKS = gql`
+  query allBooks($genre: String) {
+    allBooks(genre: $genre) {
+      ...BookDetails
+    }
   }
+  ${BOOK_DETAILS}
   `
 
   const ALL_GENRES = gql`
@@ -93,6 +102,13 @@ const App = () => {
         value
       }
     }
+  `
+
+  const BOOK_ADDED = gql`
+    subscription {
+      bookAdded { ...BookDetails }
+    }
+    ${BOOK_DETAILS}
   `
 
   const authors = useQuery(ALL_AUTHORS)
@@ -145,6 +161,13 @@ const App = () => {
         show={page === 'login'}
         login={login}
         setToken={(token) => setToken(token)} />
+
+      <Subscription
+        subscription={BOOK_ADDED}
+        onSubscriptionData={({ subscriptionData }) => {
+          window.alert(`book added: ${subscriptionData.data.bookAdded.title}`)
+        }}
+      />
 
     </div>
   )
