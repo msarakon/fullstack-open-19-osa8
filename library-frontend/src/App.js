@@ -6,6 +6,7 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import EditAuthor from './components/EditAuthor'
 import Login from './components/Login'
+import Recommendations from './components/Recommendations'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -74,6 +75,15 @@ const App = () => {
     }
   `
 
+  const LOGGED_USER = gql`
+    query me {
+      me {
+        username
+        favoriteGenre
+      }
+    }
+  `
+
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
   const addBook = useMutation(CREATE_BOOK, {
@@ -82,7 +92,10 @@ const App = () => {
   const editAuthor = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }]
   })
-  const login = useMutation(LOGIN)
+  const login = useMutation(LOGIN, {
+    refetchQueries: [{ query: LOGGED_USER }]
+  })
+  const loggedUser = useQuery(LOGGED_USER)
 
   const logout = () => {
     setToken(null)
@@ -97,25 +110,31 @@ const App = () => {
         <button onClick={() => setPage('books')}>books</button>
         {token && <button onClick={() => setPage('add')}>add book</button>}
         {token && <button onClick={() => setPage('edit-author')}>edit author</button>}
-        <button onClick={() => setPage('login')}>login</button>
+        {token && <button onClick={() => setPage('recommendations')}>recommendations</button>}
+        {!token && <button onClick={() => setPage('login')}>login</button>}
         {token && <button onClick={logout}>log out</button>}
       </div>
 
       <Authors show={page === 'authors'} result={authors} />
 
       <EditAuthor
+        show={page === 'edit-author'}
         editAuthor={editAuthor}
-        result={authors}
-        show={page === 'edit-author'} />
+        result={authors} />
 
       <Books show={page === 'books'} result={books} />
 
-      <NewBook addBook={addBook} show={page === 'add'} />
+      <NewBook show={page === 'add'} addBook={addBook} />
+
+      <Recommendations 
+        show={page === 'recommendations'}
+        result={books}
+        loggedUser={loggedUser} />
 
       <Login
+        show={page === 'login'}
         login={login}
-        setToken={(token) => setToken(token)}
-        show={page === 'login'} />
+        setToken={(token) => setToken(token)} />
 
     </div>
   )
