@@ -5,12 +5,12 @@ const Recommendations = ({ show, result, loggedUser }) => {
     return null
   }
 
-  if (result.loading || loggedUser.loading) {
+  if (result.loading) {
     return <div>loading...</div>
   }
 
   const books = result.data.allBooks
-  const favoriteGenre = loggedUser.data.me.favoriteGenre
+  const favoriteGenre = loggedUser ? loggedUser.favoriteGenre : null
 
   const filterByGenre = (book) => book.genres.includes(favoriteGenre)
 

@@ -11,6 +11,7 @@ import Recommendations from './components/Recommendations'
 const App = () => {
   const [page, setPage] = useState('authors')
   const [token, setToken] = useState(null)
+  const [loggedUser, setLoggedUser] = useState(null)
   const client = useApolloClient()
 
   useEffect(() => {
@@ -99,15 +100,13 @@ const App = () => {
   const editAuthor = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }]
   })
-  const login = useMutation(LOGIN, {
-    refetchQueries: [{ query: LOGGED_USER }]
-  })
-  const loggedUser = useQuery(LOGGED_USER)
+  const login = useMutation(LOGIN)
 
   const logout = () => {
     setToken(null)
     localStorage.clear()
     client.resetStore()
+    setPage('authors')
   }
 
   return (
@@ -141,6 +140,8 @@ const App = () => {
       <Login
         show={page === 'login'}
         login={login}
+        loggedUserQuery={LOGGED_USER}
+        setLoggedUser={(user) => setLoggedUser(user)}
         setToken={(token) => setToken(token)} />
 
     </div>
