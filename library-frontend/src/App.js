@@ -14,9 +14,22 @@ const App = () => {
   const [loggedUser, setLoggedUser] = useState(null)
   const client = useApolloClient()
 
+  const LOGGED_USER = gql`
+    query me {
+      me {
+        username
+        favoriteGenre
+      }
+    }
+  `
+
   useEffect(() => {
     setToken(localStorage.getItem('libraryAppUserToken', token))
-  }, [token])
+    if (token) {
+      client.query({ query: LOGGED_USER }).then(result =>
+        setLoggedUser(result.data.me))
+    }
+  }, [token, client, LOGGED_USER])
 
   const ALL_AUTHORS = gql`
   {
@@ -82,15 +95,6 @@ const App = () => {
     }
   `
 
-  const LOGGED_USER = gql`
-    query me {
-      me {
-        username
-        favoriteGenre
-      }
-    }
-  `
-
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
   const genres = useQuery(ALL_GENRES)
@@ -140,8 +144,6 @@ const App = () => {
       <Login
         show={page === 'login'}
         login={login}
-        loggedUserQuery={LOGGED_USER}
-        setLoggedUser={(user) => setLoggedUser(user)}
         setToken={(token) => setToken(token)} />
 
     </div>

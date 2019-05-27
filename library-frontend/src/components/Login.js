@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { useApolloClient } from 'react-apollo-hooks'
 
-const Login = ({ show, login, loggedUserQuery, setLoggedUser, setToken }) => {
+const Login = ({ show, login, setToken }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const client = useApolloClient()
 
   if (!show) {
     return null
@@ -18,9 +16,6 @@ const Login = ({ show, login, loggedUserQuery, setLoggedUser, setToken }) => {
     const token = result.data.login.value
     setToken(token)
     localStorage.setItem('libraryAppUserToken', token)
-    client.query({ query: loggedUserQuery }).then(result =>
-      setLoggedUser(result.data.me)
-    )
     setUsername('')
     setPassword('')
   }
