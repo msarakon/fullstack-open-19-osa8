@@ -1,23 +1,29 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useApolloClient } from 'react-apollo-hooks'
 
-const Books = ({ show, result }) => {
+const Books = ({ show, bookQuery, genreResult }) => {
+  const [books, setBooks] = useState([])
   const [genre, setGenre] = useState(null)
+  const client = useApolloClient()
+
+  useEffect(() => {
+    client.query({
+      query: bookQuery,
+      variables: {
+        genre: genre
+      }
+    }).then(result => setBooks(result.data.allBooks))
+  }, [client, bookQuery, genre])
 
   if (!show) {
     return null
   }
 
-  if (result.loading) {
+  if (genreResult.loading) {
     return <div>loading...</div>
   }
 
-  const books = result.data.allBooks
-  const genres = books.reduce((coll, book) => {
-    book.genres.forEach(genre => {
-      if (!coll.includes(genre)) coll.push(genre)
-    })
-    return coll
-  }, [])
+  const genres = genreResult.data.allGenres
 
   const filterByGenre = (book) => genre === null || book.genres.includes(genre)
 

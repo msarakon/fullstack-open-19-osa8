@@ -48,6 +48,7 @@ const typeDefs = gql`
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
+    allGenres: [String]
     allAuthors: [Author!]!
     me: User
   }
@@ -79,10 +80,13 @@ const resolvers = {
     bookCount: () => Book.collection.countDocuments(),
     authorCount: () => Author.collection.countDocuments(),
     allBooks: (root, args) => {
-      let result = Book.find({}).populate('author')
-      if (args.author) result = result.filter(book => book.author === args.author)
-      if (args.genre) result = result.filter(book => book.genres.includes(args.genre))
-      return result
+      let query = {}
+      if (args.author) query['author'] = args.author
+      if (args.genre) query['genres'] = args.genre
+      return Book.find(query).populate('author')
+    },
+    allGenres: () => {
+      return Book.collection.distinct('genres')
     },
     allAuthors: () => Author.find({}),
     me: (root, args, context) => context.currentUser

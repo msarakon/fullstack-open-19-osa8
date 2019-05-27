@@ -28,14 +28,20 @@ const App = () => {
   }
   `
   const ALL_BOOKS = gql`
-  {
-    allBooks {
+  query allBooks($genre: String) {
+    allBooks(genre: $genre) {
       title
       id
       author { name }
       published
       genres
     }
+  }
+  `
+
+  const ALL_GENRES = gql`
+  query allGenres {
+    allGenres
   }
   `
 
@@ -86,6 +92,7 @@ const App = () => {
 
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
+  const genres = useQuery(ALL_GENRES)
   const addBook = useMutation(CREATE_BOOK, {
     refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
   })
@@ -122,7 +129,7 @@ const App = () => {
         editAuthor={editAuthor}
         result={authors} />
 
-      <Books show={page === 'books'} result={books} />
+      <Books show={page === 'books'} bookQuery={ALL_BOOKS} genreResult={genres} />
 
       <NewBook show={page === 'add'} addBook={addBook} />
 
