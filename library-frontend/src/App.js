@@ -94,7 +94,7 @@ const App = () => {
   const books = useQuery(ALL_BOOKS)
   const genres = useQuery(ALL_GENRES)
   const addBook = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
+    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }, { query: ALL_GENRES }]
   })
   const editAuthor = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }]
