@@ -111,11 +111,24 @@ const App = () => {
     ${BOOK_DETAILS}
   `
 
+  const includedIn = (set, obj) => set.map(p => p.id).includes(obj.id)
+
   const authors = useQuery(ALL_AUTHORS)
   const books = useQuery(ALL_BOOKS)
   const genres = useQuery(ALL_GENRES)
   const addBook = useMutation(CREATE_BOOK, {
-    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }, { query: ALL_GENRES }]
+    refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }, { query: ALL_GENRES }],
+    update: (store, response) => {
+      const dataInStore = store.readQuery({ query: ALL_BOOKS })
+      const addedBook = response.data.addBook
+      if (!includedIn(dataInStore.allBooks, addedBook)) {
+        dataInStore.allBooks.push(addedBook)
+        client.writeQuery({
+          query: ALL_BOOKS,
+          data: dataInStore
+        })
+      }
+    }
   })
   const editAuthor = useMutation(EDIT_AUTHOR, {
     refetchQueries: [{ query: ALL_AUTHORS }]
@@ -165,7 +178,16 @@ const App = () => {
       <Subscription
         subscription={BOOK_ADDED}
         onSubscriptionData={({ subscriptionData }) => {
-          window.alert(`book added: ${subscriptionData.data.bookAdded.title}`)
+          const addedBook = subscriptionData.data.bookAdded
+          window.alert(`book added: ${addedBook.title}`)
+          const dataInStore = client.readQuery({ query: ALL_BOOKS })
+          if (!includedIn(dataInStore.allBooks, addedBook)) {
+            dataInStore.allBooks.push(addedBook)
+            client.writeQuery({
+              query: ALL_BOOKS,
+              data: dataInStore
+            })
+          }
         }}
       />
 
