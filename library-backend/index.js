@@ -1,6 +1,7 @@
 const { ApolloServer, gql, PubSub, UserInputError, AuthenticationError } = require('apollo-server')
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
+const DataLoader = require('dataloader')
 const Book = require('./models/book')
 const Author = require('./models/author')
 const User = require('./models/User')
@@ -33,7 +34,7 @@ const typeDefs = gql`
     name: String!
     id: ID!
     born: Int
-    bookCount: Int
+    bookCount: Int!
   }
 
   type User {
@@ -98,7 +99,10 @@ const resolvers = {
     name: (root) => root.name,
     id: (root) => root.id,
     born: (root) => root.born,
-    bookCount: (root) => Book.countDocuments({ author: root })
+    bookCount: async (root, args, { loaders }) => {
+      const books = await loaders.book.load(root._id)
+      return books.length
+    }
   },
   Mutation: {
     addBook: async (root, args, context) => {
@@ -180,6 +184,16 @@ const resolvers = {
   }
 }
 
+const batchBooks = async (authorIds) => {
+  const books = await Book.find({ author: authorIds })
+  return authorIds.map(authorId =>
+    books.filter(book => JSON.stringify(book.author) === JSON.stringify(authorId)))
+}
+
+const loaders = {
+  book: new DataLoader(authorIds => batchBooks(authorIds))
+}
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -188,8 +202,9 @@ const server = new ApolloServer({
     if (auth && auth.toLowerCase().startsWith('bearer ')) {
       const decodedToken = jwt.verify(auth.substring(7), JWT_SECRET)
       const currentUser = await User.findById(decodedToken.id)
-      return { currentUser }
+      return { currentUser, loaders }
     }
+    return { loaders }
   }
 })
 
