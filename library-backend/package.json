@@ -14,7 +14,7 @@
   "author": "Minna Sarakontu",
   "license": "MIT",
   "dependencies": {
-    "apollo-server": "^2.5.0",
+    "apollo-server": "^2.14.2",
     "dataloader": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.5.11",
